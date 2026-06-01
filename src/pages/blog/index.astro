@@ -1,114 +1,42 @@
 ---
-import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import Base from '../../layouts/Base.astro';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+// ✏️ 之后可改为 Astro getCollection 动态读取
+const posts = [
+  { slug: "first-post", title: "我的第一篇技术文章", date: "2026-05-29", desc: "这里是文章的简短摘要，让读者快速了解内容。" },
+];
 ---
+<Base title="博客" description="技术文章与学习笔记">
+  <style>
+    .page-header { margin-bottom: 2.5rem; }
+    .page-header h1 { margin-bottom: 0.4rem; }
+    .page-header p { color: var(--ink-light); font-size: 0.9rem; font-weight: 300; }
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+    .post-list { list-style: none; }
+    .post-item {
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .post-item:first-child { border-top: 1px solid var(--border); }
+    .post-meta { font-size: 0.8rem; color: var(--ink-faint); margin-bottom: 0.4rem; font-weight: 300; }
+    .post-title { font-family: var(--serif); font-size: 1.15rem; font-weight: 500; }
+    .post-title a { text-decoration: none; color: var(--ink); }
+    .post-title a:hover { color: var(--accent); }
+    .post-desc { margin-top: 0.4rem; font-size: 0.875rem; color: var(--ink-light); font-weight: 300; }
+  </style>
+
+  <div class="page-header">
+    <h1>博客</h1>
+    <p>技术文章、学习笔记、工具分享。</p>
+  </div>
+
+  <ul class="post-list">
+    {posts.map(post => (
+      <li class="post-item">
+        <div class="post-meta">{post.date}</div>
+        <div class="post-title"><a href={`/blog/${post.slug}`}>{post.title}</a></div>
+        <div class="post-desc">{post.desc}</div>
+      </li>
+    ))}
+  </ul>
+</Base>

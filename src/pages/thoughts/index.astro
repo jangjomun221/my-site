@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const items = [
+  { slug: "first-thought", title: "关于慢下来这件事", date: "2026-05-28", desc: "现代生活节奏越来越快，但我发现慢下来反而能看见更多。" },
+];
+---
+<Base title="感悟" description="随笔、思考与感悟">
+  <style>
+    .page-header { margin-bottom: 2.5rem; }
+    .page-header h1 { margin-bottom: 0.4rem; }
+    .page-header p { color: var(--ink-light); font-size: 0.9rem; font-weight: 300; }
+
+    .thought-list { list-style: none; }
+    .thought-item { padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+    .thought-item:first-child { border-top: 1px solid var(--border); }
+    .thought-meta { font-size: 0.8rem; color: var(--ink-faint); margin-bottom: 0.4rem; font-weight: 300; }
+    .thought-title { font-family: var(--serif); font-size: 1.15rem; font-weight: 500; }
+    .thought-title a { text-decoration: none; color: var(--ink); }
+    .thought-title a:hover { color: var(--accent); }
+    .thought-desc { margin-top: 0.4rem; font-size: 0.875rem; color: var(--ink-light); font-weight: 300; font-style: italic; }
+  </style>
+
+  <div class="page-header">
+    <h1>感悟</h1>
+    <p>随笔、碎念、对生活和创作的思考。</p>
+  </div>
+
+  <ul class="thought-list">
+    {items.map(item => (
+      <li class="thought-item">
+        <div class="thought-meta">{item.date}</div>
+        <div class="thought-title"><a href={`/thoughts/${item.slug}`}>{item.title}</a></div>
+        <div class="thought-desc">{item.desc}</div>
+      </li>
+    ))}
+  </ul>
+</Base>
