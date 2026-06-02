@@ -116,30 +116,33 @@ const works = [
   </div>
 
   <script>
-    const lightbox = document.getElementById('lightbox');
-    const lbImg = document.getElementById('lightbox-img');
-    const lbCaption = document.getElementById('lightbox-caption');
+    document.addEventListener('astro:page-load', () => {
+      const lightbox = document.getElementById('lightbox');
+      if (!lightbox) return;
+      const lbImg = document.getElementById('lightbox-img');
+      const lbCaption = document.getElementById('lightbox-caption');
 
-    document.querySelectorAll('.photo-item').forEach(item => {
-      item.addEventListener('click', () => {
-        lbImg.src = item.dataset.src;
-        lbImg.alt = item.dataset.title;
-        lbCaption.textContent = item.dataset.title;
-        lightbox.classList.add('open');
-        document.body.style.overflow = 'hidden';
+      document.querySelectorAll('.photo-item').forEach(item => {
+        item.addEventListener('click', () => {
+          lbImg.src = item.dataset.src;
+          lbImg.alt = item.dataset.title;
+          lbCaption.textContent = item.dataset.title;
+          lightbox.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        });
       });
-    });
 
-    lightbox.addEventListener('click', () => {
-      lightbox.classList.remove('open');
-      document.body.style.overflow = '';
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
+      lightbox.addEventListener('click', () => {
         lightbox.classList.remove('open');
         document.body.style.overflow = '';
-      }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          lightbox.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+      });
     });
   </script>
 </Base>
