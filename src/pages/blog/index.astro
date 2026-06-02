@@ -1,10 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
 
-// ✏️ 之后可改为 Astro getCollection 动态读取
-const posts = [
-  { slug: "first-post", title: "我的第一篇技术文章", date: "2026-05-29", desc: "这里是文章的简短摘要，让读者快速了解内容。" },
-];
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 ---
 <Base title="博客" description="技术文章与学习笔记">
   <style>
@@ -27,15 +26,14 @@ const posts = [
 
   <div class="page-header">
     <h1>博客</h1>
-    <p>技术文章、学习笔记、工具分享。</p>
   </div>
 
   <ul class="post-list">
     {posts.map(post => (
       <li class="post-item">
-        <div class="post-meta">{post.date}</div>
-        <div class="post-title"><a href={`/blog/${post.slug}`}>{post.title}</a></div>
-        <div class="post-desc">{post.desc}</div>
+        <div class="post-meta">{post.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
+        <div class="post-title"><a href={`/blog/${post.id}`}>{post.data.title}</a></div>
+        <div class="post-desc">{post.data.description}</div>
       </li>
     ))}
   </ul>

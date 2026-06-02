@@ -26,7 +26,7 @@ const hiddenNav = [
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet" />
-  <style>
+  <style is:global>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -160,8 +160,38 @@ const hiddenNav = [
     }
     .prose img { width: 100%; border-radius: 4px; margin: 1.5rem 0; }
     .prose code { background: var(--border); padding: 0.15em 0.4em; border-radius: 3px; font-size: 0.875em; }
-    .prose pre { background: #1a1a18; color: #e8e7e2; padding: 1.25rem; border-radius: 6px; overflow-x: auto; margin: 1.5rem 0; }
-    .prose pre code { background: none; padding: 0; font-size: 0.875rem; }
+    .prose .code-wrapper {
+      position: relative;
+      margin: 1.5rem 0;
+    }
+    .prose .code-wrapper pre {
+      background: #1a1a18 !important;
+      color: #e8e7e2 !important;
+      padding: 2rem 2rem !important;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 0;
+    }
+    .prose .code-wrapper pre code { background: none; padding: 0; font-size: 0.875rem; line-height: 1.8; }
+    .prose .code-wrapper .copy-btn {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.6rem;
+      z-index: 2;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #888;
+      font-size: 0.7rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.15s, background 0.15s, color 0.15s;
+    }
+    .prose .code-wrapper:hover .copy-btn { opacity: 1; }
+    .prose .code-wrapper .copy-btn:hover { background: rgba(255,255,255,0.18); color: #e8e7e2; }
+    .prose .code-wrapper .copy-btn.copied { opacity: 1; color: #6fcf97; border-color: rgba(111,207,151,0.3); }
 
     @media (max-width: 600px) {
       main { padding: 2rem 1.25rem; }
@@ -204,6 +234,28 @@ const hiddenNav = [
     });
     document.addEventListener('click', () => {
       dropdown.classList.remove('open');
+    });
+
+    document.querySelectorAll('.prose pre').forEach(pre => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'code-wrapper';
+      pre.parentNode.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+
+      const button = document.createElement('button');
+      button.className = 'copy-btn';
+      button.textContent = '复制';
+      button.addEventListener('click', async () => {
+        const code = pre.querySelector('code')?.textContent || pre.textContent;
+        await navigator.clipboard.writeText(code);
+        button.textContent = '已复制';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = '复制';
+          button.classList.remove('copied');
+        }, 2000);
+      });
+      wrapper.appendChild(button);
     });
   </script>
 </body>
