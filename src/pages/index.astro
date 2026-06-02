@@ -3,96 +3,259 @@ import Base from '../layouts/Base.astro';
 ---
 <Base title="首页">
   <style>
-    .hero { padding: 2rem 0 3rem; }
-    .hero-eyebrow { font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 1rem; font-weight: 400; }
-    .hero h1 { font-size: 2.6rem; margin-bottom: 1.25rem; }
-    .hero-desc { font-size: 1.05rem; color: var(--ink-light); max-width: 480px; line-height: 1.8; font-weight: 300; }
-    .hero-links { display: flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; }
-    .btn {
-      display: inline-block;
-      padding: 0.5rem 1.2rem;
-      border-radius: 4px;
-      font-size: 0.875rem;
-      text-decoration: none;
-      font-weight: 400;
-      transition: all 0.15s;
-    }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: #a04e2e; color: #fff; }
-    .btn-ghost { border: 1px solid var(--border); color: var(--ink-light); }
-    .btn-ghost:hover { border-color: var(--ink-light); color: var(--ink); }
-
-    .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
-
-    .section-title {
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      margin-bottom: 1.25rem;
-    }
-    .recent-list { list-style: none; }
-    .recent-list li {
+    .hero {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 0.6rem 0;
-      border-bottom: 1px solid var(--border);
-      gap: 1rem;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: calc(100vh - 56px - 80px);
+      position: relative;
+      z-index: 1;
     }
-    .recent-list li:last-child { border-bottom: none; }
-    .recent-list a { text-decoration: none; color: var(--ink); font-weight: 400; font-size: 0.95rem; }
-    .recent-list a:hover { color: var(--accent); }
-    .recent-list .date { font-size: 0.8rem; color: var(--ink-faint); white-space: nowrap; font-weight: 300; }
+    .hero-eyebrow { font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 1rem; font-weight: 400; }
+    .hero h1 { font-size: 2.6rem; margin-bottom: 1.25rem; display: inline-block; }
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--ink-light);
+      max-width: 480px;
+      line-height: 1.8;
+      font-weight: 300;
+      min-height: 2em;
+    }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
-    @media (max-width: 560px) { .grid-2 { grid-template-columns: 1fr; } .hero h1 { font-size: 2rem; } }
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--accent);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.7s step-end infinite;
+    }
+    .cursor.hide { animation: none; opacity: 0; }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    #pixel-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @media (max-width: 560px) { .hero h1 { font-size: 2rem; } }
   </style>
 
+  <canvas id="pixel-canvas"></canvas>
   <section class="hero">
     <p class="hero-eyebrow">你好，我是</p>
-    <!-- ✏️ 改成你的名字 -->
-    <h1>你的名字</h1>
-    <!-- ✏️ 改成你的一句话介绍 -->
-    <p class="hero-desc">
-      设计师 / 摄影师 / 写作者。<br />
-      记录思考，留存影像，分享所学。
-    </p>
-    <div class="hero-links">
-      <a href="/resume" class="btn btn-primary">查看履历</a>
-      <a href="/works" class="btn btn-ghost">摄影作品</a>
-    </div>
+    <h1><span id="typed-name"></span><span class="cursor" id="cursor"></span></h1>
+    <p class="hero-desc" id="rotating-desc"></p>
   </section>
 
-  <hr class="divider" />
+  <script>
+    const name = '张朝文';
+    const descriptions = [
+      '程序员 / 摄影师 / 写作者。',
+      '记录思考，留存影像，分享所学。',
+      '用代码堆砌生命的厚度。',
+      '喜欢在日常中发现不寻常。',
+      '在镜头与文字中对话世界。',
+    ];
 
-  <div class="grid-2">
-    <div>
-      <p class="section-title">最新博客</p>
-      <ul class="recent-list">
-        <!-- ✏️ 之后可以用 Astro getCollection 动态生成，现在先手写占位 -->
-        <li>
-          <a href="/blog/first-post">我的第一篇技术文章</a>
-          <span class="date">2026-05</span>
-        </li>
-        <li>
-          <a href="/blog">更多 →</a>
-          <span class="date"></span>
-        </li>
-      </ul>
-    </div>
-    <div>
-      <p class="section-title">近期感悟</p>
-      <ul class="recent-list">
-        <li>
-          <a href="/thoughts/first-thought">关于慢下来这件事</a>
-          <span class="date">2026-05</span>
-        </li>
-        <li>
-          <a href="/thoughts">更多 →</a>
-          <span class="date"></span>
-        </li>
-      </ul>
-    </div>
-  </div>
+    const typedEl = document.getElementById('typed-name');
+    const cursorEl = document.getElementById('cursor');
+    const descEl = document.getElementById('rotating-desc');
+
+    let charIndex = 0;
+    function typeWriter() {
+      if (charIndex < name.length) {
+        typedEl.textContent += name[charIndex];
+        charIndex++;
+        setTimeout(typeWriter, 150);
+      } else {
+        setTimeout(() => { cursorEl.classList.add('hide'); }, 1500);
+        startRotation();
+        setTimeout(startExplosion, 800);
+      }
+    }
+
+    let descIndex = 0;
+    function startRotation() {
+      typeDesc();
+    }
+
+    function typeDesc() {
+      const text = descriptions[descIndex];
+      let i = 0;
+      descEl.textContent = '';
+      function type() {
+        if (i < text.length) {
+          descEl.textContent += text[i];
+          i++;
+          setTimeout(type, 80);
+        } else {
+          setTimeout(deleteDesc, 2000);
+        }
+      }
+      type();
+    }
+
+    function deleteDesc() {
+      const text = descEl.textContent;
+      let i = text.length;
+      function del() {
+        if (i > 0) {
+          i--;
+          descEl.textContent = text.slice(0, i);
+          setTimeout(del, 40);
+        } else {
+          descIndex = (descIndex + 1) % descriptions.length;
+          setTimeout(typeDesc, 300);
+        }
+      }
+      del();
+    }
+
+    // --- Pixel explosion + bounce + background change ---
+    const backgrounds = [
+      '#faf9f7', '#f0e6d3', '#e8f0e8', '#e6e8f5',
+      '#f5e6f0', '#f7f0e0', '#e0f0f5', '#f5ece6',
+    ];
+    let bgIndex = 0;
+
+    const canvas = document.getElementById('pixel-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animating = false;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const pixelColors = [
+      '#b85c38', '#d4764e', '#e8a87c', '#f2c57c',
+      '#4a90d9', '#5bc0de', '#2ecc71', '#27ae60',
+      '#9b59b6', '#e74c3c', '#f39c12', '#1abc9c',
+      '#e91e63', '#ff6b6b', '#feca57', '#48dbfb',
+      '#ff9ff3', '#54a0ff', '#00d2d3', '#8395a7',
+    ];
+
+    function startExplosion() {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const count = 30;
+
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.3;
+        const speed = 4 + Math.random() * 6;
+        const size = 6 + Math.random() * 10;
+        particles.push({
+          x: cx,
+          y: cy,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: size,
+          color: pixelColors[Math.floor(Math.random() * pixelColors.length)],
+          opacity: 1,
+        });
+      }
+
+      if (!animating) {
+        animating = true;
+        animate();
+      }
+    }
+
+    let lastBgChange = 0;
+    function changeBg() {
+      const now = Date.now();
+      if (now - lastBgChange < 2000) return;
+      lastBgChange = now;
+      bgIndex = (bgIndex + 1) % backgrounds.length;
+      document.documentElement.style.background = backgrounds[bgIndex];
+      document.body.style.background = 'transparent';
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Bounce off walls
+        let bounced = false;
+        if (p.x <= 0 || p.x + p.size >= canvas.width) {
+          p.vx *= -0.9;
+          p.x = p.x <= 0 ? 0 : canvas.width - p.size;
+          bounced = true;
+        }
+        if (p.y <= 0 || p.y + p.size >= canvas.height) {
+          p.vy *= -0.9;
+          p.y = p.y <= 0 ? 0 : canvas.height - p.size;
+          bounced = true;
+        }
+
+
+        // Slow down gradually
+        p.vx *= 0.998;
+        p.vy *= 0.998;
+
+        // Gravity
+        p.vy += 0.02;
+
+        // Fade out very slowly
+        p.opacity -= 0.0003;
+
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+      }
+
+      // Remove dead particles
+      particles = particles.filter(p => p.opacity > 0);
+
+      if (particles.length > 0) {
+        requestAnimationFrame(animate);
+      } else {
+        animating = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    document.addEventListener('click', (e) => {
+      const count = 8 + Math.floor(Math.random() * 5);
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
+        const speed = 3 + Math.random() * 5;
+        const size = 5 + Math.random() * 8;
+        particles.push({
+          x: e.clientX,
+          y: e.clientY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: size,
+          color: pixelColors[Math.floor(Math.random() * pixelColors.length)],
+          opacity: 1,
+        });
+      }
+      if (!animating) {
+        animating = true;
+        animate();
+      }
+    });
+
+    typeWriter();
+  </script>
 </Base>

@@ -3,11 +3,13 @@ export interface Props {
   title: string;
   description?: string;
 }
-const { title, description = "个人网站" } = Astro.props;
+const { title, description = "About Me" } = Astro.props;
 const pathname = Astro.url.pathname;
 const nav = [
   { href: "/", label: "首页" },
   { href: "/resume", label: "履历" },
+];
+const hiddenNav = [
   { href: "/blog", label: "博客" },
   { href: "/thoughts", label: "感悟" },
   { href: "/works", label: "作品" },
@@ -60,12 +62,15 @@ const nav = [
     }
     .site-name {
       font-family: var(--serif);
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 700;
+      font-style: italic;
       color: var(--ink);
       text-decoration: none;
       letter-spacing: 0.02em;
+      transition: color 0.15s;
     }
+    .site-name:hover { color: var(--accent); }
     nav { display: flex; gap: 0.25rem; }
     nav a {
       font-size: 0.85rem;
@@ -78,6 +83,41 @@ const nav = [
     }
     nav a:hover { color: var(--ink); background: var(--border); }
     nav a.active { color: var(--accent); font-weight: 500; }
+
+    .secret-toggle {
+      background: transparent;
+      border: none;
+      width: 20px;
+      height: 20px;
+      cursor: default;
+      position: relative;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0;
+      min-width: 100px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      display: none;
+      z-index: 20;
+    }
+    .dropdown.open { display: block; }
+    .dropdown a {
+      display: block;
+      padding: 0.4rem 1rem;
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      text-decoration: none;
+      font-weight: 300;
+      transition: color 0.15s, background 0.15s;
+    }
+    .dropdown a:hover { color: var(--ink); background: var(--border); }
 
     /* Main */
     main {
@@ -132,19 +172,38 @@ const nav = [
 <body>
   <header>
     <div class="header-inner">
-      <a href="/" class="site-name">我的站点</a>
+      <a href="/" class="site-name" aria-label="首页">Hello</a>
       <nav>
         {nav.map(item => (
           <a href={item.href} class={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)) ? "active" : ""}>
             {item.label}
           </a>
         ))}
+        <span style="position:relative;">
+          <button class="secret-toggle" id="secret-btn" aria-label="more"></button>
+          <div class="dropdown" id="secret-dropdown">
+            {hiddenNav.map(item => (
+              <a href={item.href}>{item.label}</a>
+            ))}
+          </div>
+        </span>
       </nav>
     </div>
   </header>
   <main>
     <slot />
   </main>
-  <footer>© 2026 · 用 Astro 构建</footer>
+  <footer>© 2026 · 享受平凡的人生</footer>
+  <script>
+    const btn = document.getElementById('secret-btn');
+    const dropdown = document.getElementById('secret-dropdown');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', () => {
+      dropdown.classList.remove('open');
+    });
+  </script>
 </body>
 </html>
