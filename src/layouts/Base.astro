@@ -1,4 +1,6 @@
 ---
+import { ClientRouter } from 'astro:transitions';
+
 export interface Props {
   title: string;
   description?: string;
@@ -26,6 +28,7 @@ const hiddenNav = [
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <ClientRouter />
   <style is:global>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -333,75 +336,82 @@ const hiddenNav = [
   <footer>© 2026 · 享受平凡的人生</footer>
   <button class="back-to-top" id="back-to-top" aria-label="返回顶部">↑</button>
   <script>
-    const btn = document.getElementById('secret-btn');
-    const dropdown = document.getElementById('secret-dropdown');
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dropdown.classList.toggle('open');
-    });
-    document.addEventListener('click', () => {
-      dropdown.classList.remove('open');
-    });
-
-    // Back to top
-    const backToTop = document.getElementById('back-to-top');
-    window.addEventListener('scroll', () => {
-      backToTop.classList.toggle('visible', window.scrollY > 400);
-    });
-    backToTop.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    document.querySelectorAll('.prose pre').forEach(pre => {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'code-wrapper';
-      pre.parentNode.insertBefore(wrapper, pre);
-      wrapper.appendChild(pre);
-
-      const button = document.createElement('button');
-      button.className = 'copy-btn';
-      button.textContent = '复制';
-      button.addEventListener('click', async () => {
-        const code = pre.querySelector('code')?.textContent || pre.textContent;
-        await navigator.clipboard.writeText(code);
-        button.textContent = '已复制';
-        button.classList.add('copied');
-        setTimeout(() => {
-          button.textContent = '复制';
-          button.classList.remove('copied');
-        }, 2000);
-      });
-      wrapper.appendChild(button);
-    });
-
-    // Prose image lightbox
-    const proseLb = document.getElementById('prose-lightbox');
-    if (proseLb) {
-      const proseLbImg = proseLb.querySelector('img');
-      const proseLbCaption = proseLb.querySelector('.lightbox-caption');
-
-      document.querySelectorAll('.prose img').forEach(img => {
-        img.addEventListener('click', () => {
-          proseLbImg.src = img.src;
-          proseLbImg.alt = img.alt;
-          proseLbCaption.textContent = img.alt || '';
-          proseLb.classList.add('open');
-          document.body.style.overflow = 'hidden';
+    document.addEventListener('astro:page-load', () => {
+      const btn = document.getElementById('secret-btn');
+      const dropdown = document.getElementById('secret-dropdown');
+      if (btn && dropdown) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dropdown.classList.toggle('open');
         });
+        document.addEventListener('click', () => {
+          dropdown.classList.remove('open');
+        });
+      }
+
+      // Back to top
+      const backToTop = document.getElementById('back-to-top');
+      if (backToTop) {
+        window.addEventListener('scroll', () => {
+          backToTop.classList.toggle('visible', window.scrollY > 400);
+        });
+        backToTop.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      document.querySelectorAll('.prose pre').forEach(pre => {
+        if (pre.parentElement?.classList.contains('code-wrapper')) return;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-wrapper';
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.textContent = '复制';
+        button.addEventListener('click', async () => {
+          const code = pre.querySelector('code')?.textContent || pre.textContent;
+          await navigator.clipboard.writeText(code);
+          button.textContent = '已复制';
+          button.classList.add('copied');
+          setTimeout(() => {
+            button.textContent = '复制';
+            button.classList.remove('copied');
+          }, 2000);
+        });
+        wrapper.appendChild(button);
       });
 
-      proseLb.addEventListener('click', () => {
-        proseLb.classList.remove('open');
-        document.body.style.overflow = '';
-      });
+      // Prose image lightbox
+      const proseLb = document.getElementById('prose-lightbox');
+      if (proseLb) {
+        const proseLbImg = proseLb.querySelector('img');
+        const proseLbCaption = proseLb.querySelector('.lightbox-caption');
 
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && proseLb.classList.contains('open')) {
+        document.querySelectorAll('.prose img').forEach(img => {
+          img.addEventListener('click', () => {
+            proseLbImg.src = img.src;
+            proseLbImg.alt = img.alt;
+            proseLbCaption.textContent = img.alt || '';
+            proseLb.classList.add('open');
+            document.body.style.overflow = 'hidden';
+          });
+        });
+
+        proseLb.addEventListener('click', () => {
           proseLb.classList.remove('open');
           document.body.style.overflow = '';
-        }
-      });
-    }
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && proseLb.classList.contains('open')) {
+            proseLb.classList.remove('open');
+            document.body.style.overflow = '';
+          }
+        });
+      }
+    });
   </script>
 
   <div class="prose-lightbox" id="prose-lightbox">
