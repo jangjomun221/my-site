@@ -1,0 +1,125 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="404" description="页面未找到">
+  <style>
+    .not-found {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 50vh;
+      text-align: center;
+    }
+    .crash-scene {
+      font-size: 6rem;
+      font-family: var(--sans);
+      font-weight: 900;
+      color: var(--ink);
+      display: flex;
+      gap: 0.05em;
+      margin-bottom: 1.5rem;
+      position: relative;
+      letter-spacing: 0.02em;
+      -webkit-text-stroke: 1px var(--ink);
+    }
+    .digit {
+      display: inline-block;
+      opacity: 0;
+      position: relative;
+    }
+
+    /* 最后一个4：最先跑到右边，急刹车 */
+    .digit:nth-child(3) {
+      animation:
+        runRight 0.8s ease-out 0.2s forwards,
+        bounce 0.15s ease-in-out 0.2s 5,
+        brake 0.3s ease-out 1.0s forwards,
+        wobble 0.8s ease-in-out 1.8s forwards;
+    }
+    /* 0：第二个跑过来，撞上最后一个4 */
+    .digit:nth-child(2) {
+      animation:
+        runRight 0.8s ease-out 0.5s forwards,
+        bounce 0.15s ease-in-out 0.5s 5,
+        crash 0.4s ease-out 1.3s forwards,
+        wobble 0.8s ease-in-out 2.0s forwards;
+    }
+    /* 第一个4：最后跑过来，撞上0 */
+    .digit:nth-child(1) {
+      animation:
+        runRight 0.8s ease-out 0.8s forwards,
+        bounce 0.15s ease-in-out 0.8s 5,
+        crash 0.4s ease-out 1.6s forwards,
+        wobble 0.8s ease-in-out 2.2s forwards;
+    }
+
+    @keyframes runRight {
+      0% { opacity: 1; transform: translateX(-200px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { margin-top: 0; }
+      50% { margin-top: -8px; }
+    }
+
+    @keyframes brake {
+      0% { transform: translateX(0) scaleX(1) scaleY(1); }
+      40% { transform: translateX(6px) scaleX(0.85) scaleY(1.15); }
+      70% { transform: translateX(-3px) scaleX(1.05) scaleY(0.95); }
+      100% { transform: translateX(0) scaleX(1) scaleY(1); }
+    }
+
+    @keyframes crash {
+      0% { transform: translateX(0) scaleX(1) scaleY(1); }
+      25% { transform: translateX(10px) scaleX(0.8) scaleY(1.15); }
+      50% { transform: translateX(-5px) scaleX(1.1) scaleY(0.92); }
+      75% { transform: translateX(2px) scaleX(0.95) scaleY(1.03); }
+      100% { transform: translateX(0) scaleX(1) scaleY(1); }
+    }
+
+    @keyframes wobble {
+      0% { transform: rotate(0deg); }
+      20% { transform: rotate(-6deg); }
+      40% { transform: rotate(5deg); }
+      60% { transform: rotate(-3deg); }
+      80% { transform: rotate(1.5deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .not-found p {
+      color: var(--ink-light);
+      font-weight: 300;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeIn 0.5s ease 3s forwards;
+    }
+    .not-found a {
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1.2rem;
+      border-radius: 4px;
+      transition: color 0.15s, border-color 0.15s;
+      opacity: 0;
+      animation: fadeIn 0.5s ease 3.3s forwards;
+    }
+    .not-found a:hover { color: var(--accent); border-color: var(--accent); }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+
+  <div class="not-found">
+    <div class="crash-scene">
+      <span class="digit">4</span>
+      <span class="digit">0</span>
+      <span class="digit">4</span>
+    </div>
+    <p>这个页面不存在，或者已经被移走了。</p>
+    <a href="/">返回首页</a>
+  </div>
+</Base>

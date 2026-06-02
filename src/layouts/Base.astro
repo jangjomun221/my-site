@@ -152,13 +152,95 @@ const hiddenNav = [
     .prose ul li { margin-bottom: 0.3rem; font-weight: 300; color: #2e2e2b; }
     .prose blockquote {
       border-left: 3px solid var(--accent);
-      padding: 0.5rem 0 0.5rem 1.2rem;
+      padding: 1rem 1.2rem;
       margin: 1.5rem 0;
+      background: rgba(184, 92, 56, 0.04);
+      border-radius: 0 4px 4px 0;
       color: var(--ink-light);
-      font-style: italic;
       font-family: var(--serif);
+      display: flex;
+      align-items: center;
+      min-height: 3rem;
     }
-    .prose img { width: 100%; border-radius: 4px; margin: 1.5rem 0; }
+    .prose blockquote p { margin: 0; }
+    .prose blockquote:nth-of-type(2) {
+      border-left-color: #5b8a72;
+      background: rgba(91, 138, 114, 0.04);
+    }
+    .prose blockquote:nth-of-type(3) {
+      border-left-color: #7c6ca8;
+      background: rgba(124, 108, 168, 0.04);
+    }
+    .prose blockquote:nth-of-type(4) {
+      border-left-color: #c4883a;
+      background: rgba(196, 136, 58, 0.04);
+    }
+    .prose blockquote:nth-of-type(5) {
+      border-left-color: #5889a8;
+      background: rgba(88, 137, 168, 0.04);
+    }
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.875rem;
+    }
+    .prose th, .prose td {
+      border: 1px solid var(--border);
+      padding: 0.6rem 1rem;
+      text-align: left;
+      font-weight: 300;
+    }
+    .prose th {
+      background: #f3f2ef;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .prose tr:hover td { background: #faf9f7; }
+    .prose img { width: 100%; max-height: 420px; object-fit: cover; border-radius: 4px; margin: 1.5rem 0; cursor: pointer; transition: transform 0.4s ease; }
+    .prose img:hover { transform: scale(1.02); }
+    .prose-lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 2rem;
+      cursor: pointer;
+    }
+    .prose-lightbox.open { display: flex; }
+    .prose-lightbox img {
+      max-width: 90vw;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+    .prose-lightbox .lightbox-caption {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: 300;
+    }
+    .prose-lightbox .lightbox-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      color: rgba(255,255,255,0.6);
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .prose-lightbox .lightbox-close:hover { color: #fff; }
+    .prose figure { margin: 1.5rem 0; }
+    .prose figure img { margin: 0; }
+    .prose figcaption { text-align: center; font-size: 0.8rem; color: var(--ink-light); margin-top: 0.5rem; font-weight: 300; }
     .prose code { background: var(--border); padding: 0.15em 0.4em; border-radius: 3px; font-size: 0.875em; }
     .prose .code-wrapper {
       position: relative;
@@ -193,10 +275,34 @@ const hiddenNav = [
     .prose .code-wrapper .copy-btn:hover { background: rgba(255,255,255,0.18); color: #e8e7e2; }
     .prose .code-wrapper .copy-btn.copied { opacity: 1; color: #6fcf97; border-color: rgba(111,207,151,0.3); }
 
+    .back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--bg);
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .back-to-top.visible { opacity: 0.6; visibility: visible; }
+    .back-to-top:hover { opacity: 1; }
+
     @media (max-width: 600px) {
       main { padding: 2rem 1.25rem; }
       h1 { font-size: 1.6rem; }
       nav a { padding: 0.3rem 0.4rem; font-size: 0.8rem; }
+      .back-to-top { bottom: 1.5rem; right: 1.5rem; }
     }
   </style>
 </head>
@@ -225,6 +331,7 @@ const hiddenNav = [
     <slot />
   </main>
   <footer>© 2026 · 享受平凡的人生</footer>
+  <button class="back-to-top" id="back-to-top" aria-label="返回顶部">↑</button>
   <script>
     const btn = document.getElementById('secret-btn');
     const dropdown = document.getElementById('secret-dropdown');
@@ -234,6 +341,15 @@ const hiddenNav = [
     });
     document.addEventListener('click', () => {
       dropdown.classList.remove('open');
+    });
+
+    // Back to top
+    const backToTop = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      backToTop.classList.toggle('visible', window.scrollY > 400);
+    });
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     document.querySelectorAll('.prose pre').forEach(pre => {
@@ -257,6 +373,41 @@ const hiddenNav = [
       });
       wrapper.appendChild(button);
     });
+
+    // Prose image lightbox
+    const proseLb = document.getElementById('prose-lightbox');
+    if (proseLb) {
+      const proseLbImg = proseLb.querySelector('img');
+      const proseLbCaption = proseLb.querySelector('.lightbox-caption');
+
+      document.querySelectorAll('.prose img').forEach(img => {
+        img.addEventListener('click', () => {
+          proseLbImg.src = img.src;
+          proseLbImg.alt = img.alt;
+          proseLbCaption.textContent = img.alt || '';
+          proseLb.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+
+      proseLb.addEventListener('click', () => {
+        proseLb.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && proseLb.classList.contains('open')) {
+          proseLb.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+      });
+    }
   </script>
+
+  <div class="prose-lightbox" id="prose-lightbox">
+    <button class="lightbox-close">&times;</button>
+    <img src="" alt="" />
+    <div class="lightbox-caption"></div>
+  </div>
 </body>
 </html>

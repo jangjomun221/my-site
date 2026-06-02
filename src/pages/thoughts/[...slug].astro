@@ -3,22 +3,22 @@ import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const posts = (await getCollection('blog'))
+  const items = (await getCollection('thoughts'))
     .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
-  return posts.map((post, i) => ({
-    params: { slug: post.id },
+  return items.map((item, i) => ({
+    params: { slug: item.id },
     props: {
-      post,
-      prev: posts[i + 1] || null,
-      next: posts[i - 1] || null,
+      item,
+      prev: items[i + 1] || null,
+      next: items[i - 1] || null,
     },
   }));
 }
 
-const { post, prev, next } = Astro.props;
-const { Content } = await render(post);
+const { item, prev, next } = Astro.props;
+const { Content } = await render(item);
 ---
-<Base title={post.data.title} description={post.data.description}>
+<Base title={item.data.title} description={item.data.description}>
   <style>
     .post-header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
     .post-meta { font-size: 0.8rem; color: var(--ink-faint); margin-bottom: 0.75rem; font-weight: 300; }
@@ -46,11 +46,11 @@ const { Content } = await render(post);
     .post-nav .nav-next { text-align: right; margin-left: auto; }
   </style>
 
-  <a href="/blog" class="back">&larr; 博客</a>
+  <a href="/thoughts" class="back">&larr; 感悟</a>
 
   <div class="post-header">
-    <div class="post-meta">{post.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
-    <h1>{post.data.title}</h1>
+    <div class="post-meta">{item.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
+    <h1>{item.data.title}</h1>
   </div>
 
   <div class="prose">
@@ -58,7 +58,7 @@ const { Content } = await render(post);
   </div>
 
   <nav class="post-nav">
-    {prev && <a href={`/blog/${prev.id}`}>&larr; {prev.data.title}</a>}
-    {next && <a class="nav-next" href={`/blog/${next.id}`}>{next.data.title} &rarr;</a>}
+    {prev && <a href={`/thoughts/${prev.id}`}>&larr; {prev.data.title}</a>}
+    {next && <a class="nav-next" href={`/thoughts/${next.id}`}>{next.data.title} &rarr;</a>}
   </nav>
 </Base>

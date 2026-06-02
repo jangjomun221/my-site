@@ -1,22 +1,21 @@
 ---
 import Base from '../../layouts/Base.astro';
 
-// ✏️ 在这里添加你的作品，把图片放到 public/images/works/ 目录下
 const works = [
   {
-    src: "/images/works/photo-1.jpg",
+    src: "/images/works/1.webp",
     title: "光与影",
     date: "2026-04",
     desc: "清晨的光线穿过窗帘，落在地板上的那一刻。",
   },
   {
-    src: "/images/works/photo-2.jpg",
+    src: "/images/works/2.webp",
     title: "城市角落",
     date: "2026-03",
     desc: "城市里被忽视的安静角落。",
   },
   {
-    src: "/images/works/photo-3.jpg",
+    src: "/images/works/3.webp",
     title: "人物",
     date: "2026-02",
     desc: "街头偶遇的陌生人。",
@@ -27,11 +26,10 @@ const works = [
   <style>
     .page-header { margin-bottom: 2.5rem; }
     .page-header h1 { margin-bottom: 0.4rem; }
-    .page-header p { color: var(--ink-light); font-size: 0.9rem; font-weight: 300; }
 
     .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 
-    .photo-item { }
+    .photo-item { cursor: pointer; }
     .photo-wrap {
       aspect-ratio: 4/3;
       overflow: hidden;
@@ -47,34 +45,62 @@ const works = [
     }
     .photo-item:hover .photo-wrap img { transform: scale(1.03); }
 
-    /* 占位（图片未放时显示） */
-    .photo-placeholder {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--ink-faint);
-      font-size: 0.8rem;
-      font-weight: 300;
-    }
-
     .photo-title { font-family: var(--serif); font-size: 0.95rem; font-weight: 500; margin-bottom: 0.2rem; }
     .photo-meta { font-size: 0.8rem; color: var(--ink-faint); font-weight: 300; }
     .photo-desc { font-size: 0.85rem; color: var(--ink-light); font-weight: 300; margin-top: 0.25rem; }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 2rem;
+      cursor: pointer;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+    .lightbox-caption {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: 300;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      color: rgba(255,255,255,0.6);
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .lightbox-close:hover { color: #fff; }
 
     @media (max-width: 560px) { .gallery { grid-template-columns: 1fr; } }
   </style>
 
   <div class="page-header">
     <h1>作品</h1>
-    <p>摄影记录。</p>
   </div>
 
   <div class="gallery">
     {works.map(work => (
-      <div class="photo-item">
+      <div class="photo-item" data-src={work.src} data-title={work.title}>
         <div class="photo-wrap">
-          <!-- 如果图片存在就显示，否则显示占位 -->
-          <img src={work.src} alt={work.title} onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-          <div class="photo-placeholder" style="display:none">图片放到 public/images/works/ 目录</div>
+          <img src={work.src} alt={work.title} />
         </div>
         <div class="photo-title">{work.title}</div>
         <div class="photo-meta">{work.date}</div>
@@ -82,4 +108,38 @@ const works = [
       </div>
     ))}
   </div>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close">&times;</button>
+    <img id="lightbox-img" src="" alt="" />
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
+
+  <script>
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    const lbCaption = document.getElementById('lightbox-caption');
+
+    document.querySelectorAll('.photo-item').forEach(item => {
+      item.addEventListener('click', () => {
+        lbImg.src = item.dataset.src;
+        lbImg.alt = item.dataset.title;
+        lbCaption.textContent = item.dataset.title;
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    lightbox.addEventListener('click', () => {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        lightbox.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
 </Base>
